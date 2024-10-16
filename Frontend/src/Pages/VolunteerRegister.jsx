@@ -68,25 +68,6 @@ const VolunteerRegister = () => {
     setConfirmPasswordVisible(!confirmPasswordVisible);
   };
 
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     Object.keys(formData).forEach((key) => validateField(key, formData[key]));
-//     if (!Object.values(errors).some((error) => error)) {
-//       console.log('Form submitted:', formData);
-//       setFormData({
-//         name: '',
-//         phone: '',
-//         skill: '',
-//         customSkill: '',
-//         dob: '',
-//         age: '',
-//         email: '',
-//         password: '',
-//         confirmPassword: ''
-//       });
-//       setErrors({});
-//     }
-//   };
 //______________________________________________edited________________________
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -95,13 +76,15 @@ const handleSubmit = async (e) => {
 
   if (!Object.values(errors).some((error) => error)) {
     try {
-      const response = await fetch('http://localhost:5500/volunteer-register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Example URL (update to match your server setup)
+const response = await fetch('http://localhost:5500/api/volunteer-register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(formData),
+});
+
 
       const data = await response.json();
       if (!response.ok) {
@@ -283,13 +266,14 @@ const handleSubmit = async (e) => {
         
         {/* Submit Button */}
         <button 
-          onClick={() => navigate('/volunteer-login')}
+          onClick={handleSubmit}
+         
           className="w-full py-2 mt-4 bg-green-400 text-white rounded-lg hover:bg-green-700 transition duration-150"
         >
           Register
         </button>
         <button 
-          onClick={handleSubmit}
+          onClick={() => navigate('/volunteer-login')}
           className="w-full py-2 mt-4 bg-green-400 text-white rounded-lg hover:bg-green-700 transition duration-150"
         >
           Login
