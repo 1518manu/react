@@ -44,9 +44,9 @@ const Home = () => {
             </button>
             {loginDropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-40">
-                <Link to="#user" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">User</Link>
+                <Link to="/user-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">User</Link>
                 <Link to="/volunteer-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Volunteer</Link>
-                <a href="#admin" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin</a>
+                <a href="/admin-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin</a>
                 <a href="#organization" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Organization</a>
               </div>
             )}

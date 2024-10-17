@@ -101,7 +101,8 @@ const VolunteerPage = () => {
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
 
-      {/* Navbar */}
+      {/* Navbar "fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-30 bg-gray-800 bg-opacity-75 backdrop-blur-sm"*/}
+      
       <nav className="relative p-4 flex justify-between items-center z-30 backdrop-blur-sm">
         <div className="text-white text-lg font-bold">MyLogo</div>
         <div className="hidden md:flex space-x-6 items-center">
@@ -209,7 +210,7 @@ const VolunteerPage = () => {
         </div>
 
         {/* Right Section: Calendar and Messages */}
-        <div className="bg-white bg-opacity-70 p-6 w-3/5 flex flex-col rounded shadow-md">
+        <div className="relative bg-white bg-opacity-70 p-6 w-3/5 flex flex-col rounded shadow-md">
           <h2 className="text-3xl font-bold mb-4">{`${currentMonth} ${currentYear}`}</h2>
           <div className="grid grid-cols-7 gap-2 mb-4">
             {/* Day Labels */}
