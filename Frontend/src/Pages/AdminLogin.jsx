@@ -47,7 +47,7 @@ const AdminLogin = () => {
 
         console.log('Login successful:', data);
         alert(data.message);
-        //navigate('/admin-dashboard'); // Navigate to the admin dashboard
+        navigate('/admin-dashboard'); // Navigate to the admin dashboard
       } catch (error) {
         console.error('Error during login:', error);
       }

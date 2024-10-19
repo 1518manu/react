@@ -55,3 +55,50 @@ exports.registerAdmin = async (req, res) => {
     res.status(500).json({ message: 'Error saving Admin data' });
   }
 };
+
+//----------------------------------------------------------------------------
+
+//admin-volunteer fetch
+const Volunteer = require('../models/Volunteer');
+//exports.adminDashboard = async (req, res) => {
+  exports.fetchVolunteers = async (req, res) => {
+    console.log("admincontroller,fetchVolunteers reached")
+    //const { date1, skill1 } = req.params; // Assuming the date and skill are passed as params
+    const {skill1} = req.params;
+  try {
+    // Find volunteers whose skill matches and who are available on the provided date
+    const volunteers = await Volunteer.find({
+      skill: { $regex: skill1, $options: 'i' }/*, // Match skill (case-insensitive)
+      date: date1  // Match date exactly
+    */});
+
+    if (volunteers.length === 0) {
+      return res.status(404).json({ message: 'No volunteers found with the specified date and skill.' });
+    }
+
+    // Return the matching volunteers as JSON
+    res.status(200).json(volunteers);
+  } catch (error) {
+    console.error('Error fetching volunteers:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+//   //const { name, phone, skill, customSkill } = req.body;
+//   const { skills } = req.params;
+//   console.log("in cont reg")
+//   try {
+//     const existingVolunteer = await Volunteer.findOne({ $or: [{ /*date1 */ }, { skill1 }] });
+    
+//     //if (existingVolunteer) {
+//       if (volunteers.length === 0) {
+//         return res.status(404).json({ message: 'No volunteers found with the specified skills.' });
+//       }
+  
+//       // Send the filtered volunteer data back to the client
+//       res.status(200).json(existingVolunteer);
+//     } catch (error) {
+//       console.error("Error fetching volunteers:", error);
+//       res.status(500).json({ message: 'Server error' });
+//     }
+// };
