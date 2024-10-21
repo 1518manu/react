@@ -6,6 +6,7 @@ const cors = require('cors');
 const volunteerRoutes = require('./routes/volunteerRoutes');
 const userRoutes = require('./routes/userRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const organisationRoutes = require('./routes/organisationRoutes')
 
 
 const app = express();
@@ -21,6 +22,7 @@ console.log("server")
 app.use('/api', userRoutes);
 app.use('/api', volunteerRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', organisationRoutes)
 
 
 const PORT = process.env.PORT || 5500;

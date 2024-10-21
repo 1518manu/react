@@ -1,142 +1,172 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Pie, Bar } from 'react-chartjs-2';
+import { motion } from 'framer-motion';
+import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+
+Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const AdminDashboard = () => {
-  const [requests, setRequests] = useState([
-    { id: 1, title: 'Request 1', description: '20-10-2024,driving' },
-    { id: 2, title: 'Request 2', description: '22-10-2024,first aid' },
-    { id: 3, title: 'Request 3', description: '23-10-2024,cooking' }
-  ]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [volunteers, setVolunteers] = useState([]); 
-  const [error, setError] = useState(null);  // Move useState declaration outside of the function
+  const [volunteerData, setVolunteerData] = useState({
+    assigned: 0,
+    unassigned: 0,
+    skillCounts: {}
+  });
+  
+  const [organisationData, setOrganisationData] = useState([]);
+  const [inventoryData, setInventoryData] = useState({
+    food: 0,
+    clothMen: 0,
+    clothWomen: 0,
+    clothChildren: 0,
+    medicine: 0
+  });
 
-  const fetchVolunteers = async (e) => {
-    e.preventDefault();
-    
-    if (!selectedRequest) {
-      setError('Please select a request.');
-      return;
-    }
-
-    const [date1, skill1] = selectedRequest.description.split(',');
-    console.log(date1,skill1)
-    if (!date1 || !skill1) {
-      setError('Invalid request description format.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:5500/api/admin-dashboard/${skill1}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.message || 'Failed to fetch volunteers');
-        setVolunteers([]);  // Clear previous results if error occurs
-        return;
+  // Dummy data for frontend testing
+  useEffect(() => {
+    setVolunteerData({
+      assigned: 50,
+      unassigned: 30,
+      skillCounts: {
+        JavaScript: 20,
+        Python: 15,
+        React: 10,
+        Node: 15,
+        MongoDB: 20
       }
+    });
 
-      // Set the fetched volunteer data in state
-      setVolunteers(data);
-      setError(null);  // Clear any previous errors
-    } catch (error) {
-      console.error('Error fetching volunteers:', error);
-      setError('Error fetching volunteers. Please try again.');
-    }
+    setOrganisationData([
+      { name: 'Org1', volunteers: { JavaScript: 5, Python: 3, React: 2 } },
+      { name: 'Org2', volunteers: { Node: 7, MongoDB: 4 } }
+    ]);
+
+    setInventoryData({
+      food: 200,
+      clothMen: 150,
+      clothWomen: 130,
+      clothChildren: 100,
+      medicine: 50
+    });
+  }, []);
+
+  // MongoDB connection code would go here, but for now it is commented
+  /*
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const volunteerResponse = await fetch('/api/volunteers');
+        const volunteerJson = await volunteerResponse.json();
+        setVolunteerData(volunteerJson);
+
+        const organisationResponse = await fetch('/api/organisations');
+        const organisationJson = await organisationResponse.json();
+        setOrganisationData(organisationJson);
+
+        const inventoryResponse = await fetch('/api/inventory');
+        const inventoryJson = await inventoryResponse.json();
+        setInventoryData(inventoryJson);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  */
+
+  // Data for pie chart (assigned vs unassigned volunteers)
+  const pieData = {
+    labels: ['Assigned', 'Unassigned'],
+    datasets: [
+      {
+        data: [volunteerData.assigned, volunteerData.unassigned],
+        backgroundColor: ['#4CAF50', '#FF6347'],
+      },
+    ],
+  };
+
+  // Data for bar chart (organisation and volunteers by skill)
+  const barData = {
+    labels: organisationData.map(org => org.name),
+    datasets: Object.keys(volunteerData.skillCounts).map(skill => ({
+      label: skill,
+      data: organisationData.map(org => org.volunteers[skill] || 0),
+      backgroundColor: `#${Math.floor(Math.random() * 16777215).toString(16)}`
+    }))
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
-      <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Admin Dashboard</h1>
-        <div>
-          <button className="mr-4 hover:text-cyan-400">Home</button>
-          <button className="hover:text-red-400">Logout</button>
+      <nav className="fixed w-full bg-white shadow-lg z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="text-xl font-bold">Admin Dashboard</div>
+          <div>
+            <button className="mr-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-300">
+              Add Organisation
+            </button>
+            <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition duration-300">
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 
-      <div className="flex flex-grow">
-        {/* Left section: Request List */}
-        <div 
-          className="w-1/6 p-4 shadow-md" 
-          style={{ backgroundImage: 'url(/path/to/left-section-bg.jpg)', backgroundSize: 'cover' }} // Background image for the left section
+      {/* Main Content */}
+      <div className="pt-20 px-4 sm:px-8">
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-lg font-bold mb-4 text-white">Request List</h2>
-          <ul>
-            {requests.map((request) => (
-              <li
-                key={request.id}
-                onClick={() => setSelectedRequest(request)}
-                className="cursor-pointer p-2 bg-gray-200 hover:bg-gray-300 mb-2 rounded"
-              >
-                {request.title}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Middle section: Request Details and Fetch Volunteer */}
-        <div 
-          className="w-2/6 p-4"
-          style={{ backgroundColor: '#f0f4f8' }} // Custom color for the middle section
-        >
-          <h2 className="text-lg font-bold mb-4">Request Details</h2>
-          {selectedRequest ? (
-            <div className="bg-white p-4 shadow-md rounded">
-              <h3 className="text-md font-semibold mb-2">{selectedRequest.title}</h3>
-              <p className="mb-4">{selectedRequest.description}</p>
-            </div>
-          ) : (
-            <p>Select a request to view details</p>
-          )}
-          
-          <div className="mt-4">
-            <button 
-              onClick={fetchVolunteers} 
-              className="px-4 py-2 bg-green-400 text-white rounded hover:bg-green-600"
-            >
-              Fetch Volunteer
-            </button>
+          {/* Volunteer Pie Chart */}
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Volunteers Assignment</h2>
+            <Pie data={pieData} />
           </div>
 
-          {/* Display error message if any */}
-          {error && <p className="text-red-500 mt-4">{error}</p>}
-        </div>
+          {/* Organisation Bar Chart */}
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Organisation Volunteers by Skill</h2>
+            <Bar data={barData} />
+          </div>
 
-        {/* Right section: Volunteer Table */}
-        <div 
-          className="w-3/6 p-4 shadow-md overflow-auto" 
-          style={{ backgroundImage: 'url(/path/to/right-section-bg.jpg)', backgroundSize: 'cover', backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)' }} // Background image and overlay for the right section
+          {/* Inventory Information */}
+          <div className="bg-white p-6 rounded-lg shadow-lg col-span-full">
+            <h2 className="text-2xl font-bold mb-4">Inventory Details</h2>
+            <ul>
+              <li>Food: {inventoryData.food}</li>
+              <li>Cloth (Men): {inventoryData.clothMen}</li>
+              <li>Cloth (Women): {inventoryData.clothWomen}</li>
+              <li>Cloth (Children): {inventoryData.clothChildren}</li>
+              <li>Medicine: {inventoryData.medicine}</li>
+            </ul>
+          </div>
+        </motion.div>
+
+        {/* Organisation More Info */}
+        <motion.div
+          className="bg-white p-6 rounded-lg shadow-lg mt-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-lg font-bold mb-4 text-white">Volunteers</h2>
-          <table className="w-full border-collapse bg-white bg-opacity-80">
-            <thead>
-              <tr>
-                <th className="border p-2 text-left">Name</th>
-                <th className="border p-2 text-left">Phone</th>
-                <th className="border p-2 text-left">Availability</th>
-                <th className="border p-2 text-left">Select</th>
-              </tr>
-            </thead>
-            <tbody>
-              {volunteers.map((volunteer, index) => (
-                <tr key={index}>
-                  <td className="border p-2">{volunteer.name}</td>
-                  <td className="border p-2">{volunteer.phone}</td>
-                  <td className="border p-2">{volunteer.availability}</td>
-                  <td className="border p-2 text-center">
-                    <input type="checkbox" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <h2 className="text-2xl font-bold mb-4">Organisation Volunteer Details</h2>
+          {organisationData.map(org => (
+            <div key={org.name} className="mb-4">
+              <h3 className="text-xl font-bold">{org.name}</h3>
+              <ul>
+                {Object.keys(org.volunteers).map(skill => (
+                  <li key={skill}>{skill}: {org.volunteers[skill]}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300">
+            More Information
+          </button>
+        </motion.div>
       </div>
     </div>
   );

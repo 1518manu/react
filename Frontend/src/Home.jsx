@@ -31,7 +31,7 @@ const Home = () => {
       <nav className="fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-30 bg-gray-800 bg-opacity-75 backdrop-blur-sm"> {/* Fixed Navbar */}
         <div className="text-white text-lg font-bold">MyLogo</div>
         <div className="hidden md:flex space-x-6 items-center">
-          <a href="#home" className="text-white transform transition-transform hover:text-cyan-400 hover:scale-110">Home</a>
+          <a href="" className="text-white transform transition-transform hover:text-cyan-400 hover:scale-110">Home</a>
           <a href="#about" className="text-white transform transition-transform hover:text-cyan-400 hover:scale-110">About</a>
           <a href="#contact" className="text-white transform transition-transform hover:text-cyan-400 hover:scale-110">Contact</a>
           {/* Login Button with Dropdown */}
@@ -47,7 +47,7 @@ const Home = () => {
                 <Link to="/user-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">User</Link>
                 <Link to="/volunteer-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Volunteer</Link>
                 <a href="/admin-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin</a>
-                <a href="#organization" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Organization</a>
+                <a href="/organisation-login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Organization</a>
               </div>
             )}
           </div>
@@ -130,6 +130,15 @@ const Home = () => {
           <span>(123) 456-7890</span>
         </div>
       </div>
+
+       {/* Footer Section */}
+       <footer className="bg-gray-800 text-white p-4 mt-10">
+        <div className="text-center">
+          <p className="mb-2">© 2024 Community Support System. All Rights Reserved.</p>
+          <p className="mb-1">Building a better future together.</p>
+          <p>Follow us on social media for updates and events!</p>
+        </div>
+      </footer>
     </div>
   );
 };
