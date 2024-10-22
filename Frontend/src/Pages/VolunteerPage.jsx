@@ -29,7 +29,7 @@ const VolunteerPage = () => {
 
     const daysArray = Array(startDayOfWeek).fill(null);
     for (let day = 1; day <= daysInMonth; day++) {
-      daysArray.push({ date: new Date(currentYear, currentDate.getMonth(), day), available: true });
+      daysArray.push({ date: new Date(currentYear, currentDate.getMonth(), day), available: false }); // Set available to false by default
     }
     return daysArray;
   };
@@ -74,33 +74,18 @@ const VolunteerPage = () => {
   };
 
   const toggleAvailability = (index) => {
-    setCalendar((prevCalendar) =>
-      prevCalendar.map((day, i) =>
-        i === index ? { ...day, available: !day.available } : day
-      )
-    );
+    const day = calendar[index];
+    const isPastOrToday = day && (day.date < currentDate || day.date.toDateString() === currentDate.toDateString()); // Check if the date is in the past or today
+
+    // Only toggle if the day is not a past date or today
+    if (!isPastOrToday && day) {
+      setCalendar((prevCalendar) =>
+        prevCalendar.map((d, i) =>
+          i === index ? { ...d, available: !d.available } : d
+        )
+      );
+    }
   };
-  // const toggleAvailability = (index) => {
-  //   setCalendar((prevCalendar) => {
-  //     const updatedCalendar = prevCalendar.map((day, i) => {
-  //       if (i === index) {
-  //         // Toggle the availability
-  //         const newAvailability = !day.available;
-  //         // If the day is being marked as available, add it to selectedDates
-  //         if (newAvailability) {
-  //           setSelectedDates((prevSelected) => [...prevSelected, day.date]);
-  //         } else {
-  //           // If the day is being marked as unavailable, remove it from selectedDates
-  //           setSelectedDates((prevSelected) => prevSelected.filter(date => date.getTime() !== day.date.getTime()));
-  //         }
-  //         return { ...day, available: newAvailability };
-  //       }
-  //       return day;
-  //     });
-  //     return updatedCalendar;
-  //   });
-  // };
-  
 
   const openModal = (message) => {
     setSelectedMessage(message);
@@ -114,7 +99,7 @@ const VolunteerPage = () => {
 
   const handleConfirmDates = () => {
     const selectedDates = calendar
-      .filter(day => day && day.available && day.date >= currentDate)
+      .filter(day => day && day.available && day.date >= currentDate) // Only get available and future dates
       .map(day => day.date.toISOString().split('T')[0]); // Format dates for storage
 
     console.log('Selected Dates:', selectedDates);
@@ -127,20 +112,20 @@ const VolunteerPage = () => {
       },
       body: JSON.stringify({ selectedDates }),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Success:', data);
-      alert('Dates successfully confirmed and stored!');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('There was a problem with storing the dates.');
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Success:', data);
+        alert('Dates successfully confirmed and stored!');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('There was a problem with storing the dates.');
+      });
   };
 
   return (
@@ -150,7 +135,8 @@ const VolunteerPage = () => {
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
 
-      <nav className="relative p-4 flex justify-between items-center z-30 backdrop-blur-sm">
+      {/* Fixed Navbar */}
+      <nav className="fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-30 backdrop-blur-sm">
         <div className="text-white text-lg font-bold">MyLogo</div>
         <div className="hidden md:flex space-x-6 items-center">
           <Link to="/volunteer-page" className="text-white">Volunteer</Link>
@@ -159,6 +145,12 @@ const VolunteerPage = () => {
             onClick={() => console.log('Logged out')}
           >
             Logout
+          </button>
+          <button 
+            className="text-white flex items-center" 
+            onClick={toggleEditProfile}
+          >
+            <FiEdit className="mr-2" /> Edit Profile
           </button>
         </div>
         <div className="md:hidden">
@@ -180,8 +172,8 @@ const VolunteerPage = () => {
         </div>
       )}
 
-      <div className="relative z-10 flex min-h-screen">
-        <div className="bg-white bg-opacity-70 p-6 w-2/5 flex flex-col justify-center rounded shadow-md">
+      <div className="relative z-10 flex flex-col md:flex-row min-h-screen pt-16"> {/* Adjust padding-top to accommodate fixed navbar */}
+        <div className="bg-white bg-opacity-70 p-6 w-full md:w-2/5 flex flex-col justify-center rounded shadow-md mb-4 md:mb-0">
           <h1 className="text-4xl font-bold mb-4">Welcome, {name || 'User'}!</h1>
           
           <p className="text-gray-700 mb-6">
@@ -189,11 +181,6 @@ const VolunteerPage = () => {
           </p>
 
           <div className="mt-6">
-            <div className="flex items-center cursor-pointer" onClick={toggleEditProfile}>
-              <FiEdit className="mr-2" />
-              <span>Edit Profile</span>
-            </div>
-
             {editProfileOpen && (
               <div className="mt-4 bg-white bg-opacity-80 p-4 rounded shadow-md">
                 <form onSubmit={handleEditProfileSubmit}>
@@ -253,7 +240,7 @@ const VolunteerPage = () => {
           </div>
         </div>
 
-        <div className="relative bg-white bg-opacity-70 p-6 w-3/5 flex flex-col rounded shadow-md">
+        <div className="relative bg-white bg-opacity-70 p-6 w-full md:w-3/5 flex flex-col rounded shadow-md">
           <h2 className="text-3xl font-bold mb-4">{`${currentMonth} ${currentYear}`}</h2>
           <div className="grid grid-cols-7 gap-2 mb-4">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
