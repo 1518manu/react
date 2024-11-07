@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { FiMenu, FiX, FiEdit } from 'react-icons/fi';
 import backgroundImage from '../assets/bg.jpg';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const VolunteerPage = () => {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [name, setName] = useState('');
@@ -128,6 +131,14 @@ const VolunteerPage = () => {
       });
   };
 
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Clear the token
+    console.log('Logged out');
+    navigate('/', { replace: true }); // Navigate to home and replaces history
+};
+
+
   return (
     <div
       className="relative bg-cover bg-center bg-no-repeat min-h-screen"
@@ -142,7 +153,7 @@ const VolunteerPage = () => {
           <Link to="/volunteer-page" className="text-white">Volunteer</Link>
           <button 
             className="text-white" 
-            onClick={() => console.log('Logged out')}
+            onClick={handleLogout}
           >
             Logout
           </button>
@@ -165,7 +176,7 @@ const VolunteerPage = () => {
           <Link to="/volunteer-page" className="block text-white">Volunteer</Link>
           <button 
             className="block text-white w-full text-left"
-            onClick={() => console.log('Logged out')}
+            onClick={handleLogout}
           >
             Logout
           </button>
@@ -174,10 +185,10 @@ const VolunteerPage = () => {
 
       <div className="relative z-10 flex flex-col md:flex-row min-h-screen pt-16"> {/* Adjust padding-top to accommodate fixed navbar */}
         <div className="bg-white bg-opacity-70 p-6 w-full md:w-2/5 flex flex-col justify-center rounded shadow-md mb-4 md:mb-0">
-          <h1 className="text-4xl font-bold mb-4">Welcome, {name || 'User'}!</h1>
+          <h1 className="text-4xl font-bold mb-4">Welcome, {name || 'Volunteer'}!</h1>
           
           <p className="text-gray-700 mb-6">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Thank you for joining our mission! Every step you take as a volunteer brings hope and change to those who need it most. Together, let’s make a meaningful impact and build a kinder, stronger community. Your efforts truly matter!
           </p>
 
           <div className="mt-6">

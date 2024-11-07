@@ -48,6 +48,7 @@ const VolunteerLogin = () => {
 
         // Successful login
         console.log('Login successful:', data);
+        localStorage.setItem('authToken', data.token); // Store the token
         alert(data.message); // You can use this to show a success message
         navigate('/volunteer-page'); // Navigate to the volunteer page
       } catch (error) {

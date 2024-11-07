@@ -48,7 +48,8 @@ const OrganisationLogin = () => {
 
         // Successful login
         console.log('Login successful:', data);
-        alert(data.message); // You can use this to show a success message
+        alert(data.message);
+        localStorage.setItem('authToken', data.token);
         navigate('/organisation-page'); // Navigate to the organisation dashboard page
       } catch (error) {
         console.error('Error during login:', error);

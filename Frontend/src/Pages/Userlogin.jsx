@@ -49,7 +49,8 @@ const UserLogin = () => {
         // Successful login
         console.log('Login successful:', data);
         alert(data.message); // You can use this to show a success message
-        navigate('/volunteer-page'); // Navigate to the volunteer page
+        localStorage.setItem('isAuthenticated', 'true');
+        navigate('/user-page'); // Navigate to the volunteer page
       } catch (error) {
         console.error('Error during login:', error);
       }

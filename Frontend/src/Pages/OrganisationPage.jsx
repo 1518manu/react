@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 //import { FiMenu, FiX } from 'react-icons/fi';
 
 const OrganisationPage = () => {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [volunteerCount, setVolunteerCount] = useState(0);
   const [fromDate, setFromDate] = useState('');
@@ -52,6 +53,13 @@ const OrganisationPage = () => {
     fetchVolunteers();
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+
+    navigate('/', {replace: true});
+  }
+
   return (
     <div className="relative min-h-screen">
       {/* Navbar */}
@@ -59,7 +67,7 @@ const OrganisationPage = () => {
         <div className="font-bold text-lg">Organisation Logo</div>
         <div>
           <Link to="/organisation-page" className="mr-4">Organisation</Link>
-          <button onClick={() => console.log('Logged out')} className="bg-red-500 px-4 py-2 rounded">
+          <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded">
             Logout
           </button>
         </div>
